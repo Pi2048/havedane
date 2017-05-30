@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Have DANE?</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="js/havedane.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="jumbotron">
+            <h1>Have DANE?</h1>
+            <p>Does your mail server check DANE when sending email? (<a href="https://www.ncsc.nl/english/current-topics/factsheets/factsheet-secure-the-connections-of-mail-servers.html">why?</a>)</p>
+        </div> <!-- jumbotron -->
+        <p>Send an email to these addresses (click to copy):</p>
+        <div class="input-group">
+            <input id="generatedaddresses" class="form-control" readonly />
+            <div class="input-group-btn">
+                <button class="btn btn-primary" onclick="copyAddresses()">
+                    <span class="glyphicon glyphicon-copy"></span>
+                </button>
+            </div> <!-- input-group-btn -->            
+        </div> <!--input-group -->
+        <p>Or copy by hand:</p>
+        <div class="well well-sm" id="generatedaddresses-well">
+            Placeholder
+        </div><!-- well -->
+        <h2>Results</h2>
+        <div class="alert alert-success nondane">Email to non-DANE domain <strong>delivered</strong>.</div>
+        <div class="alert alert-info nondane">Email to non-DANE domain <strong>not delivered yet</strong>.</div>
+        <div class="alert alert-danger nondane">Email to non-DANE domain <strong>not delivered</strong>.</div>
+        <div class="alert alert-success havedane">Email to DANE domain <strong>delivered</strong>.</div>
+        <div class="alert alert-info havedane">Email to DANE domain <strong>not delivered yet</strong>.</div>
+        <div class="alert alert-danger havedane">Email to DANE domain <strong>not delivered</strong>.</div>
+        <div class="alert alert-success wrongdane">Email to domain with invalid DANE <strong>not delivered</strong>.</div>
+        <div class="alert alert-info wrongdane">Email to domain with invalid DANE <strong>not delivered yet</strong>.</div>
+        <div class="alert alert-danger wrongdane">Email to domain with invalid DANE <strong>delivered</strong>.</div>
+        <h2>Note</h2>
+        <p>Your mail server will probably keep trying to deliver mail it could not deliver immediately. You could receive several messages about this in the next few days. In particular, if you pass all three tests you will receive messages that your mail server could not reach wrong.havedane.net.</p>
+        <p>Check whether your mail server supports incoming DANE & STARTTLS at <a href="https://en.internet.nl">internet.nl</a>.</p>
+        <p>Created by <a href="https://twitter.com/WhatSecurity">@WhatSecurity</a></p>
+    </div> <!-- row -->
+</div> <!-- container -->
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+.nondane.alert-success,
+.nondane.alert-danger,
+.havedane.alert-success,
+.havedane.alert-danger,
+.wrongdane.alert-success,
+.wrongdane.alert-danger
+{
+    display: none;
+}
