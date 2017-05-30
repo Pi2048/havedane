@@ -4,4 +4,4 @@ This code is supposed to be used in conjunction with the instructions at https:/
 
 The html directory contains the web application (HTML/CSS/JS/PHP). Place its contents in your web root.
 
-THe bin directory contains the scripts that process incoming emails. Place iets contents in /root/bin.
+THe bin directory contains the scripts that process incoming emails. Place its contents in /root/bin.
