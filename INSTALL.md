@@ -46,7 +46,7 @@ Configure the web server to serve the contents of /var/www/html, while passing .
 
 Import the code from the repository[^2] and install it in /var/www/html.
 
-Generate a secret string and set it as the value of the variable 'secret' in config.php. You can use `pwgen -s 42 1` to generate a random string. This secret value will be used to generate random email addresses. If an attacker knows this value, he can predict the email addresses other people will be served. He can then mess with their test results.
+Copy config-example.php to config.php. Generate a secret string and set it as the value of the variable 'secret' in config.php. You can use `pwgen -s 42 1` to generate a random string. This secret value will be used to generate random email addresses. If an attacker knows this value, he can predict the email addresses other people will be served. He can then mess with their test results.
 
 Reload the web server: `sudo service nginx reload`.
 
