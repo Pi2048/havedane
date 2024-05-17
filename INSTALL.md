@@ -29,7 +29,16 @@ Create a directory `/var/www/db`. In this directory, create a database file: `sq
 
 In the database, create a table 'tests':
 
-    create table tests (alias TEXT, firstreceived DATETIME, do BOOLEAN, dont BOOLEAN, wrong BOOLEAN);
+    CREATE TABLE tests (id INT PRIMARY KEY, alias TEXT, firstreceived DATETIME, do BOOLEAN, dont BOOLEAN, wrong BOOLEAN);
+
+Next, add a trigger to delete old tests whenever a new one is started:
+
+    CREATE TRIGGER delete_old_tests AFTER INSERT ON tests
+    BEGIN
+      DELETE FROM tests WHERE id < (SELECT MAX(id) FROM tests) - 1000;
+    END;
+
+This ensures that the database will not grow arbitrarily large, even when faced with a huge number of requests. However, it causes a small denial of service risk: if someone sends the server hundreds to thousands of requests per minute, other users will not be able to complete their tests. If this happens, you can increase the number of tests to keep in the trigger.
 
 ## Web application
 
@@ -122,10 +131,6 @@ Your DNS server or DNS provider must support DNSSEC. You can check whether this 
 ## I think that's it!
 
 Obviously, I have written these instructions after I finished building HaveDane.net. Therefore, stuff will probably be missing. Contact me if you try these instructions but they do not work.
-
-~~One thing that I think should be included (but that I have not built yet) is automatic deletion of old table rows in the database. This shouldn't be too difficult (compare the timestamp with the current date and delete anything that's older than 24 hours, run this in a script as a cron job), but I haven't figured it out yet.~~
-
-Update 2020-07-25: I've [added](https://github.com/Pieter1024/havedane/commit/2f0e1ad60e6518174e925c0981dc308abf08652c) a simple script that deletes all the contents of the tests table. I run it once a month. It's a bit crude, as any tests that are in-progress when it runs will fail silently, but I think I can live with that.
 
 #### Footnotes
 
