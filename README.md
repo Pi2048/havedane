@@ -1,6 +1,6 @@
 # HaveDane.net code
 
-This code is supposed to be used in conjunction with the instructions in [INSTALL.md].
+This code is supposed to be used in conjunction with the instructions in [INSTALL.md](INSTALL.md).
 
 The html directory contains the web application (HTML/CSS/JS/PHP). Place its contents in your web root.
 
