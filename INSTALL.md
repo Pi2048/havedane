@@ -19,13 +19,15 @@ These two components are tied together by a database. In the database, the web a
 
 Install the required software:
 
-    sudo apt-get install nginx php5-nginx php5-fpm sqlite3 php5-sqlite easy-rsa
+    sudo apt-get install nginx
+    sudo apt-get install php php-fpm sqlite3 php-sqlite3 easy-rsa
+    sudo apt-get remove apache*
 
 ## Create database
 
 We will use an SQLite3-database. If you expect many visitors, you may want to use a separate database server. The database will contain the aliases that the web application generates and for which the mail transfer agent will process email.
 
-Create a directory `/var/www/db`. In this directory, create a database file: `sqlite3 havedane.net.sqlite3`. Make sure the database is writable to both the user that runs the web server and the user that runs the mail transfer agent. For example, make it world-writable.
+Create a directory `/var/www/db`. In this directory, create a database file: `sqlite3 havedane.net.sqlite3`. Make sure the database is writable to both the user that runs the web server and the user that runs the mail transfer agent. For example, make both the database and the directory that contains it world-writable.
 
 In the database, create a table 'tests':
 
@@ -43,6 +45,8 @@ This ensures that the database will not grow arbitrarily large, even when faced 
 ## Web application
 
 Configure the web server to serve the contents of /var/www/html, while passing .php files to PHP-FPM.
+
+Configure PHP-FPM to use the same timezone as the system time. This is important because the timestamps that PHP and bash generate have to match.
 
 Import the code from the repository[^2] and install it in /var/www/html.
 
@@ -64,23 +68,25 @@ Source the vars script, run the cleanup script and then build the internal CA an
 
     sudo -i
     cd /etc/easy-rsa
-    source ./vars
-    ./clean-all
-    ./build-ca
-    ./build-key-server do.havedane.net
+    mv vars.example vars
+    ./easyrsa init-pki
+    ./easyrsa build-ca nopass
+    ./easyrsa build-server-full do.havedane.net nopass
 
 Download the keys/do.havedane.net.crt and keys/ca.crt files to your workstation. We will use these to generate the DANE records later.
 
 Postfix only accepts full x509 certificate chains, so concatenate the CA certificate and the server certificate:
 
     sudo -i
-    cat keys/do.havedane.net.crt keys/ca.crt > keys/do.havedane.net.fullchain.crt
+    cat issued/do.havedane.net.crt ca.crt > issued/do.havedane.net.fullchain.crt
 
-Now, configure Postfix. In /etc/postfix/main.cf, change or add the following settings:
+Now, install postfix with `sudo apt install postfix`. Choose 'internet with smarthost' and set the system mail name to 'havedane.net'. Leave the relay host empty.
 
-    smtpd_tls_cert_file=/etc/easy-rsa/keys/do.havedane.net.fullchain.crt
-    smtpd_tls_key_file=/etc/easy-rsa/keys/do.havedane.net.key
-    smtpd_use_tls=yes
+In /etc/postfix/main.cf, change or add the following settings:
+
+    smtpd_tls_cert_file=/etc/easy-rsa/issued/do.havedane.net.fullchain.crt
+    smtpd_tls_key_file=/etc/easy-rsa/issued/do.havedane.net.key
+    smtpd_tls_security_level = may
     myhostname = havedane.net
     mydestination = havedane.net, localhost.net, localhost
     virtual_alias_domains = do.havedane.net, dont.havedane.net, wrong.havedane.net
@@ -105,7 +111,7 @@ Edit /etc/aliases to redirect the messages to the appropriate scripts, by adding
 
 Run `newaliases` to process the aliases file.
 
-Put the three Python scripts {do,dont,wrong}-havedane-net.py[^2] in the /root/bin directory and make them world-executable.
+Put the three Python scripts {do,dont,wrong}-havedane-net.py[^2] in the /root/bin directory and make them world-executable. Make sure the user postfix can reach them, by making /root and /root/bin readable and executable for others too.
 
 Reload the mail transfer agent: `sudo service postfix reload`.
 
